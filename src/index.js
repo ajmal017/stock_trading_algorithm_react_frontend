@@ -4,7 +4,7 @@ import './index.css';
 
 
 class Square extends React.Component {
-  // This is a constructor that builds the state of the component "atom"
+  // This is a constructor that runs on startup and set initial state
   constructor(props) {
     super(props);
     this.state = {
@@ -16,16 +16,44 @@ class Square extends React.Component {
   // heres how you have a button update the state
   render() {
     return (
-      <button className="square" onClick={() => this.setState({value: 'X'})}>
-        {this.state.value}
+      <button className="square" onClick={() => this.props.onClick()}>
+        {this.props.value}
       </button>
     );
   }
 }
 
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      squares: Array(9).fill(null),
+      turn: 'X'
+    };
+  }
+
+  // and here is where the logic starts to take shape for updating squares
+  handleClick(i) {
+    // slice duplicates the array rather than using existing array to keeps things immutable
+    const squares = this.state.squares.slice();
+    // Here is a nice way to "log" prns during dev... alert(this.state.turn)
+    squares[i] = this.state.turn;
+    this.setState({squares: squares});
+    // change the players turn
+    if (this.state.turn = 'X') {
+      this.setState({turn: 'O'})
+    } else {
+      this.setState({turn: 'X'})}
+  }
+
   renderSquare(i) {
-    return <Square value={i} />;
+    return (
+      <Square
+        value={this.state.squares[i]}
+      // here we are passing a function as an arg to the square function
+        onClick={() => this.handleClick(i)}
+      />
+    );
   }
 
   render() {
