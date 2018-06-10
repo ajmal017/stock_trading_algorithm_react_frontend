@@ -4,10 +4,20 @@ import './index.css';
 
 
 class Square extends React.Component {
+  // This is a constructor that builds the state of the component "atom"
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: null,
+    };
+  }
+
+  // This is basically the return statement for what gets rendered on the page
+  // heres how you have a button update the state
   render() {
     return (
-      <button className="square">
-        {/* TODO */}
+      <button className="square" onClick={() => this.setState({value: 'X'})}>
+        {this.state.value}
       </button>
     );
   }
@@ -15,7 +25,7 @@ class Square extends React.Component {
 
 class Board extends React.Component {
   renderSquare(i) {
-    return <Square />;
+    return <Square value={i} />;
   }
 
   render() {
@@ -60,9 +70,24 @@ class Game extends React.Component {
   }
 }
 
-// ========================================
+class ShoppingList extends React.Component {
+  render() {
+    return (
+      <div className="shopping-list">
+        <h1>Shopping List for {this.props.name}</h1>
+        <ul>
+          <li>Instagram</li>
+          <li>WhatsApp</li>
+          <li>Oculus</li>
+        </ul>
+      </div>
+    );
+  }
+}
+// Example usage: <ShoppingList name="Mark" />
 
+// ========================================
+// This is like the main method in clojure and connects to <div id="root"></div> in index.html
 ReactDOM.render(
-  <Game />,
-  document.getElementById('root')
+  <Game />, document.getElementById('root'),
 );
