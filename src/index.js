@@ -3,32 +3,23 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 
-class Square extends React.Component {
-  // This is a constructor that runs on startup and set initial state
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: null,
-    };
-  }
-
+function Square(props) {
   // This is basically the return statement for what gets rendered on the page
   // heres how you have a button update the state
-  render() {
     return (
-      <button className="square" onClick={() => this.props.onClick()}>
-        {this.props.value}
+      <button className="square" onClick={props.onClick}>
+        {props.value}
       </button>
     );
-  }
 }
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
+    // here is where we define the initial state
     this.state = {
       squares: Array(9).fill(null),
-      turn: 'X'
+      xIsNext: true,
     };
   }
 
@@ -36,14 +27,15 @@ class Board extends React.Component {
   handleClick(i) {
     // slice duplicates the array rather than using existing array to keeps things immutable
     const squares = this.state.squares.slice();
+
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+
     // Here is a nice way to "log" prns during dev... alert(this.state.turn)
-    squares[i] = this.state.turn;
-    this.setState({squares: squares});
-    // change the players turn
-    if (this.state.turn = 'X') {
-      this.setState({turn: 'O'})
-    } else {
-      this.setState({turn: 'X'})}
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({squares: squares,
+                   xIsNext: !this.state.xIsNext,});
   }
 
   renderSquare(i) {
@@ -57,7 +49,14 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    const winner = calculateWinner(this.state.squares);
+    let status; // declaring a variable to be used later
+
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
 
     return (
       <div>
@@ -98,24 +97,30 @@ class Game extends React.Component {
   }
 }
 
-class ShoppingList extends React.Component {
-  render() {
-    return (
-      <div className="shopping-list">
-        <h1>Shopping List for {this.props.name}</h1>
-        <ul>
-          <li>Instagram</li>
-          <li>WhatsApp</li>
-          <li>Oculus</li>
-        </ul>
-      </div>
-    );
-  }
-}
-// Example usage: <ShoppingList name="Mark" />
 
 // ========================================
 // This is like the main method in clojure and connects to <div id="root"></div> in index.html
 ReactDOM.render(
   <Game />, document.getElementById('root'),
 );
+
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
