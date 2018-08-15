@@ -81,6 +81,7 @@ class Board extends React.Component {
   }
 }
 
+
 class Game extends React.Component {
   render() {
     return (
@@ -98,10 +99,76 @@ class Game extends React.Component {
 }
 
 
+// Working on API call here
+
+
+class Stocks extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: null,
+      isLoaded: false,
+      items: []
+    };
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:8085/data/dow")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            items: result
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+  }
+
+  render() {
+    const { error, isLoaded, items } = this.state;
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    } else if (!isLoaded) {
+      return <div>Loading...</div>;
+    } else {
+      return (
+        <div>
+        <h1> Dow List </h1>
+        <ul>
+          {items.map(item => (
+            <li key={item.ticker}>
+              {item.ticker} {item.total_score}
+            </li>
+          ))}
+        </ul>
+        </div>
+      );
+    }
+  }
+}
+
+
+
+
+
+
+
+
 // ========================================
 // This is like the main method in clojure and connects to <div id="root"></div> in index.html
 ReactDOM.render(
-  <Game />, document.getElementById('root'),
+  //<Game />, document.getElementById('root'),
+  <Stocks />, document.getElementById('root'),
 );
 
 
